@@ -15,8 +15,7 @@ class GraphTransformerNetwork(tf.keras.Model):
     ):
         super(GraphTransformerNetwork, self).__init__()
         self.gcn_layers = [
-            GraphConvolutionLayer(gcn_output_dim)
-            for _ in range(num_gcn_layers)
+            GraphConvolutionLayer(gcn_output_dim) for _ in range(num_gcn_layers)
         ]
         self.transformer_layers = [
             TransformerLayer(
