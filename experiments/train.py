@@ -1,4 +1,5 @@
 import tensorflow as tf
+
 from src.models.graph_transformer_network import GraphTransformerNetwork
 
 

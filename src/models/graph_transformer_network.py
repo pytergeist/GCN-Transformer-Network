@@ -1,5 +1,6 @@
-from src.layers import GraphConvolutionLayer, TransformerLayer
 import tensorflow as tf
+
+from src.layers import GraphConvolutionLayer, TransformerLayer
 
 
 class GraphTransformerNetwork(tf.keras.Model):
@@ -35,23 +36,3 @@ class GraphTransformerNetwork(tf.keras.Model):
         for transformer_layer in self.transformer_layers:
             x = transformer_layer(x, training=training)
         return self.final_dense(x)
-
-
-if __name__ == "__main__":
-    num_nodes = 500
-    num_features = 128
-    adjacency_matrix = tf.random.uniform((num_nodes, num_nodes), minval=0, maxval=1)
-    node_features = tf.random.uniform((num_nodes, num_features))
-
-    model = GraphTransformerNetwork(
-        num_gcn_layers=2,
-        gcn_output_dim=64,
-        transformer_layers=2,
-        transformer_embed_dim=64,
-        transformer_num_heads=4,
-        transformer_ff_dim=256,
-        transformer_dropout_rate=0.1,
-    )
-
-    output = model(adjacency_matrix, node_features)
-    print(output.shape)

@@ -1,5 +1,6 @@
-from src.layers import MultiHeadSelfAttention
 import tensorflow as tf
+
+from src.layers import MultiHeadSelfAttention
 
 
 class TransformerLayer(tf.keras.layers.Layer):
