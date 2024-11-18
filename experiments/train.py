@@ -1,9 +1,7 @@
-import tensorflow as tf
-
-from src.models.graph_transformer_network import GraphTransformerNetwork
-
-
 def train_model(X, A, train_data, val_data, params):
+    import tensorflow as tf
+    from src.models.graph_transformer_network import GraphTransformerNetwork
+
     model = GraphTransformerNetwork(
         num_gcn_layers=params["gcn_layers"],
         gcn_output_dim=params["embed_dim"],
@@ -14,19 +12,38 @@ def train_model(X, A, train_data, val_data, params):
         transformer_dropout_rate=params["dropout_rate"],
     )
 
-    model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=params["learning_rate"]),
-        loss="mean_squared_error",
-        metrics=["mean_absolute_error", tf.keras.metrics.RootMeanSquaredError()],
-    )
+    optimizer = tf.keras.optimizers.Adam(learning_rate=params["learning_rate"])
+    mse_loss_fn = tf.keras.losses.MeanSquaredError()
+    mae_metric = tf.keras.metrics.MeanAbsoluteError()
+    rmse_metric = tf.keras.metrics.RootMeanSquaredError()
 
-    history = model.fit(
-        [X, A],
-        train_data["targets"],
-        validation_data=([val_data["inputs"], val_data["targets"]]),
-        batch_size=params["batch_size"],
-        epochs=params["epochs"],
-        callbacks=[tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=5)],
-    )
+    adjacency_matrix = A
+    node_features = X
 
-    return model, history
+    train_user_indices = train_data["inputs"][0]
+    train_item_indices = train_data["inputs"][1]
+
+    num_users = len(set(train_user_indices))
+    node_indices = train_user_indices
+
+    epochs = params["epochs"]
+    for epoch in range(epochs):
+        with tf.GradientTape() as tape:
+            outputs = model(adjacency_matrix, node_features, training=True)
+            predictions = tf.gather(outputs, node_indices)
+            loss = mse_loss_fn(train_data["targets"], predictions)
+        gradients = tape.gradient(loss, model.trainable_variables)
+        optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+
+        mae_metric.update_state(train_data["targets"], predictions)
+        rmse_metric.update_state(train_data["targets"], predictions)
+        mae = mae_metric.result().numpy()
+        rmse = rmse_metric.result().numpy()
+        mae_metric.reset_states()
+        rmse_metric.reset_states()
+
+        print(
+            f"Epoch {epoch + 1}/{epochs}, Loss: {loss.numpy()}, MAE: {mae}, RMSE: {rmse}"
+        )
+
+    return model, None

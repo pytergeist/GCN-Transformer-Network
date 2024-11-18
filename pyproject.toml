@@ -11,6 +11,7 @@ tensorflow-macos = "^2.16.2"
 tensorflow-metal = "^1.1.0"
 pandas = "^2.2.3"
 scikit-learn = "^1.5.2"
+bs4 = "^0.0.2"
 
 
 [tool.poetry.group.dev.dependencies]
