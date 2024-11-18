@@ -1,11 +1,11 @@
-import src
+from src.layers import MultiHeadSelfAttention
 import tensorflow as tf
 
 
 class TransformerLayer(tf.keras.layers.Layer):
     def __init__(self, embed_dim, num_heads, feed_forward_dim, dropout_rate=0.1):
         super(TransformerLayer, self).__init__()
-        self.self_attention = src.layers.MultiHeadSelfAttention(embed_dim, num_heads)
+        self.self_attention = MultiHeadSelfAttention(embed_dim, num_heads)
         self.norm1 = tf.keras.layers.LayerNormalization(epsilon=1e-6)
         self.dropout1 = tf.keras.layers.Dropout(dropout_rate)
         self.feed_forward = tf.keras.Sequential(
