@@ -1,9 +1,10 @@
 import json
-from experiments.data_fetcher import download_epinions, download_ciao
+from itertools import product
+
+from experiments.data_fetcher import download_ciao, download_epinions
+from experiments.evaluate import evaluate_model
 from experiments.preprocess import preprocess_data
 from experiments.train import train_model
-from experiments.evaluate import evaluate_model
-from itertools import product
 
 
 def run_experiments():

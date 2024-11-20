@@ -1,5 +1,6 @@
 def train_model(X, A, train_data, val_data, params):
     import tensorflow as tf
+
     from src.models.graph_transformer_network import GraphTransformerNetwork
 
     model = GraphTransformerNetwork(
